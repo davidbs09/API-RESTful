@@ -4,9 +4,47 @@
 
 ---
 
-## 📝 Descrição
 
-Esta API RESTful simula operações bancárias essenciais, permitindo o gerenciamento de usuários, contas, cartões, funcionalidades e notícias. O projeto foi modelado a partir de um domínio realista, com base no [Figma do desafio](https://www.figma.com/file/0ZsjwjsYlYd3timxqMWlbj/SANTANDER---Projeto-Web%2FMobile?type=design&node-id=1421%3A432&mode=design&t=6dPQuerScEQH0zAn-1), e utiliza tecnologias modernas para garantir produtividade, qualidade e facilidade de deploy.
+## 🎯 Entrega do Desafio
+
+Esta é a entrega atual do projeto para o desafio do Bootcamp Santander DIO 2025.
+
+**O que já existia no início do desafio:**
+- Endpoint de criação de usuário (`POST /users`)
+- Endpoint de busca de usuário por ID (`GET /users/{id}`)
+
+**Melhorias e novas funcionalidades implementadas nesta entrega:**
+- Endpoints para atualização de dados do usuário:
+    - PATCH para nome, cartão e conta/limite
+- Endpoints de transações bancárias:
+    - Depósito, saque, transferência entre contas
+    - Extrato de transações por conta
+- Modelagem completa de domínio, incluindo entidades Transaction, Card, Account, Feature, News
+- Lógica de negócio robusta para saldo, limite, e registro de todas as movimentações
+
+> Esta entrega representa uma evolução significativa do projeto original, agregando recursos reais de um sistema bancário e preparando a base para futuras expansões.
+
+## 🚧 Plano de Refatoração e Futuras Atualizações
+
+Por questões de tempo e priorização de outros projetos do bootcamp, as melhorias abaixo não foram implementadas nesta entrega, mas já estão planejadas para evolução futura da API:
+
+- **Uso do limite como crédito (cheque especial, Pix/crédito):**
+    - Implementar operações que permitam usar o limite da conta/cartão, com regras de autorização e cálculo de juros.
+    - Registrar e exibir o valor utilizado do limite e os juros acumulados.
+- **Fatura do cartão de crédito:**
+    - Adicionar datas de fechamento e vencimento da fatura ao cartão.
+    - Endpoint para pagamento de fatura, simulando pagamento em dia ou em atraso.
+    - Exibir mensagens de acordo com a data de pagamento (ex: "Fatura paga em dia, parabéns!" ou "Fatura paga com atraso, nome sujo!").
+- **Endpoints de consulta avançada:**
+    - Consultar limite disponível, limite utilizado, extrato detalhado da fatura.
+- **Autenticação e segurança:**
+    - Implementar autenticação JWT para proteger endpoints sensíveis e permitir transações seguras.
+
+> Assim que possível, estas melhorias serão implementadas para tornar a API ainda mais robusta, realista e pronta para produção.
+
+---
+
+Esta entrega demonstra evolução, domínio de modelagem, aplicação de regras de negócio e preocupação com a escalabilidade do sistema. O projeto está pronto para ser expandido e refatorado conforme o plano acima.
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -46,13 +84,21 @@ classDiagram
         Long id
         String number
         String agency
-        BigDecimal balance
-        BigDecimal limit
+        BigDecimal balance  // Saldo real disponível
+        BigDecimal limit    // Limite de crédito (cheque especial)
     }
     class Card {
         Long id
         String number
-        BigDecimal limit
+        BigDecimal limit    // Limite do cartão de crédito
+    }
+    class Transaction {
+        Long id
+        Account account
+        BigDecimal amount
+        TransactionType type // DEPOSIT, WITHDRAW, TRANSFER_IN, TRANSFER_OUT
+        String description
+        LocalDateTime createdAt
     }
     class Feature {
         Long id
@@ -68,12 +114,25 @@ classDiagram
     User "1" *-- "N" Feature
     User "1" *-- "1" Card
     User "1" *-- "N" News
+    Account "1" o-- "*" Transaction
 ```
+
 
 ## 🔗 Endpoints Principais
 
-- `GET /users/{id}`: Busca usuário por ID
-- `POST /users`: Cria um novo usuário
+### User Controller
+- `POST /users` — Cria um novo usuário
+- `GET /users/{id}` — Busca usuário por ID
+- `PATCH /users/{id}/name` — Atualiza o nome do usuário
+- `PATCH /users/{id}/card` — Atualiza dados do cartão do usuário
+- `PATCH /users/{id}/account` — Atualiza dados da conta (número, agência, limite)
+
+### Transaction Controller
+- `POST /transactions/deposit` — Realiza depósito em conta
+- `POST /transactions/withdraw` — Realiza saque em conta
+- `POST /transactions/transfer` — Realiza transferência entre contas
+- `GET /transactions/statement/{accountId}` — Consulta extrato de transações da conta
+
 - Documentação interativa: `/swagger-ui.html` após rodar a aplicação
 
 ## ⚙️ Como Executar Localmente
@@ -94,10 +153,10 @@ classDiagram
 
 O deploy é realizado automaticamente no Railway, utilizando o `Procfile` e variáveis de ambiente para configuração do banco de dados PostgreSQL em produção.
 
-## 🧪 Testes
+### Diagrama de Classes
 
-O projeto inclui testes básicos de contexto com JUnit e Spring Boot.
 
-## 📄 Licença
 
-Projeto para fins educacionais, desenvolvido como parte do Bootcamp Santander DIO 2025.
+#### Lógica de Negócio Atual
+
+- **Saldo (balance)**: representa o dinheiro real disponível na conta do usuário.
