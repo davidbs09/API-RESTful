@@ -152,11 +152,3 @@ classDiagram
 ## ☁️ Deploy na Nuvem
 
 O deploy é realizado automaticamente no Railway, utilizando o `Procfile` e variáveis de ambiente para configuração do banco de dados PostgreSQL em produção.
-
-### Diagrama de Classes
-
-
-
-#### Lógica de Negócio Atual
-
-- **Saldo (balance)**: representa o dinheiro real disponível na conta do usuário.
