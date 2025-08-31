@@ -33,4 +33,25 @@ public class UserController {
                 .toUri();
         return ResponseEntity.created(location).body(userCreated);
     }
+
+    @PatchMapping("/{id}/name")
+    public ResponseEntity<User> updateName(@PathVariable Long id, @RequestParam String name) {
+        var user = userService.updateName(id, name);
+        return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/{id}/card")
+    public ResponseEntity<User> updateCard(@PathVariable Long id, @RequestParam String cardNumber, @RequestParam java.math.BigDecimal limit) {
+        var user = userService.updateCard(id, cardNumber, limit);
+        return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/{id}/account")
+    public ResponseEntity<User> updateAccount(@PathVariable Long id,
+                                              @RequestParam(required = false) String number,
+                                              @RequestParam(required = false) String agency,
+                                              @RequestParam(required = false) java.math.BigDecimal limit) {
+        var user = userService.updateAccount(id, number, agency, limit);
+        return ResponseEntity.ok(user);
+    }
 }

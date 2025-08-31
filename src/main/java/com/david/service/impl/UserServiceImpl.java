@@ -28,4 +28,34 @@ public class UserServiceImpl implements UserService {
         }
         return userRepository.save(userToCreate);
     }
+
+    @Override
+    public User updateName(Long id, String name) {
+        User user = findById(id);
+        user.setName(name);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updateCard(Long id, String cardNumber, java.math.BigDecimal limit) {
+        User user = findById(id);
+        if (user.getCard() == null) {
+            throw new IllegalArgumentException("User does not have a card");
+        }
+        user.getCard().setNumber(cardNumber);
+        user.getCard().setLimit(limit);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updateAccount(Long id, String number, String agency, java.math.BigDecimal limit) {
+        User user = findById(id);
+        if (user.getAccount() == null) {
+            throw new IllegalArgumentException("User does not have an account");
+        }
+        if (number != null) user.getAccount().setNumber(number);
+        if (agency != null) user.getAccount().setAgency(agency);
+        if (limit != null) user.getAccount().setLimit(limit);
+        return userRepository.save(user);
+    }
 }
